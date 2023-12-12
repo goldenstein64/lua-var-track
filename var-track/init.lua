@@ -195,7 +195,7 @@ end
 
 ---declares a new scope in this scope
 ---@return var-track.VarTrack
-function VarTrack:block()
+function VarTrack:scope()
 	local result = VarTrack()
 	setmetatable(result.declared, { __index = self.declared })
 	return result
