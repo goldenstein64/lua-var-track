@@ -148,4 +148,28 @@ describe 'VarTrack', ->
 			}
 		}, v.diagnostics
 
+	it 'diagnoses unknown globals', ->
+		-- do
+		--   foo()
+		-- end
+
+		v = VarTrack!
+		v\reference 'foo', 'ref_data'
+		v\done!
+
+		assert.same {
+			{
+				type: 'unknown_global'
+				data: 'ref_data'
+				var: {
+					name: 'foo'
+					global: true
+					const: false
+					declared: 'ref_data'
+					defined: {}
+					referenced: { 'ref_data' }
+				}
+			}
+		}, v.diagnostics
+
 
