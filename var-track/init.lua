@@ -21,7 +21,7 @@ local muun = require("var-track.muun")
 ---@class var-track.diagnostic
 ---@field type string
 ---@field data var-track.data
----@field var? var-track.var_info
+---@field var var-track.var_info
 
 ---@class var-track.VarTrack
 ---@field declared { [string]: var-track.var_info }
