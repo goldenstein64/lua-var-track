@@ -89,29 +89,38 @@ describe 'VarTrack', ->
 		var2 = v\declare 'foo', 'decl2_data'
 		v\done!
 
+		expected_var1 = {
+			name: 'foo'
+			global: false
+			const: false
+			declared: 'decl1_data'
+			defined: {}
+			referenced: {}
+		}
+
+		expected_var2 = {
+			name: 'foo'
+			global: false
+			const: false
+			declared: 'decl2_data'
+			defined: {}
+			referenced: {}
+			shadowing: expected_var1
+		}
+
 		assert.same {
-			{
+			{ -- caught in second declaration
 				type: 'shadowed_local'
 				data: 'decl2_data'
-				var: {
-					name: 'foo'
-					global: false
-					const: false
-					declared: 'decl1_data'
-					defined: {}
-					referenced: {}
-				}
-			}, {
+				var: expected_var1
+			}, { -- caught when scope ends
 				type: 'unused_local'
 				data: 'decl2_data'
-				var: {
-					name: 'foo'
-					global: false
-					const: false
-					declared: 'decl2_data'
-					defined: {}
-					referenced: {}
-				}
+				var: expected_var2
+			}, { -- caught when scope ends
+				type: 'unused_local'
+				data: 'decl1_data'
+				var: expected_var1
 			}
 		}, v.diagnostics
 

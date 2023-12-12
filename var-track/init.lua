@@ -15,6 +15,8 @@ local muun = require("var-track.muun")
 ---@field defined var-track.data[]
 ---where this variable is referenced
 ---@field referenced var-track.data[]
+---what this variable is shadowing
+---@field shadowing var-track.var_info?
 
 ---@class var-track.diagnostic
 ---@field type string
@@ -66,14 +68,17 @@ function VarTrack:declare(name, data)
 		defined = {},
 		referenced = {},
 		const = false,
-		declared = data
+		declared = data,
 	}
 
 	local old_var_info = self.declared[name]
-	if old_var_info and not old_var_info.global then
-		---@type var-track.diagnostic
-		local diag = { type = "shadowed_local", data = data, var = old_var_info }
-		table.insert(self.diagnostics, diag)
+	if old_var_info then
+		if not old_var_info.global then
+			---@type var-track.diagnostic
+			local diag = { type = "shadowed_local", data = data, var = old_var_info }
+			table.insert(self.diagnostics, diag)
+		end
+		var_info.shadowing = old_var_info
 	end
 
 	self.declared[name] = var_info
@@ -166,15 +171,25 @@ function VarTrack:reference(name, data)
 	return var_info
 end
 
+---@param self var-track.VarTrack
+---@param var_info var-track.var_info
+local function check_unused(self, var_info)
+	if not var_info.global and #var_info.referenced <= 0 then
+		---@type var-track.diagnostic
+		local diag = { type = "unused_local", data = var_info.declared, var = var_info }
+		table.insert(self.diagnostics, diag)
+	end
+
+	if var_info.shadowing then
+		check_unused(self, var_info.shadowing)
+	end
+end
+
 ---declares that this tracker's scope has ended. This adds diagnostics
 ---for unused locals
 function VarTrack:done()
 	for _, var_info in pairs(self.declared) do
-		if not var_info.global and #var_info.referenced <= 0 then
-			---@type var-track.diagnostic
-			local diag = { type = "unused_local", data = var_info.declared, var = var_info }
-			table.insert(self.diagnostics, diag)
-		end
+		check_unused(self, var_info)
 	end
 end
 
