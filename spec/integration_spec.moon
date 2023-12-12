@@ -2,12 +2,11 @@ VarTrack = require 'var-track'
 
 describe 'VarTrack', ->
 	it 'diagnoses unused undefined locals', ->
-		v = VarTrack!
-
 		-- do
 		--   local foo
 		-- end
 
+		v = VarTrack!
 		var = v\declare 'foo', 'decl_data'
 		v\done!
 
@@ -27,13 +26,12 @@ describe 'VarTrack', ->
 		}, v.diagnostics
 
 	it 'diagnoses unused defined locals', ->
-		v = VarTrack!
-
 		-- do
 		--   local foo
 		--   foo = 5
 		-- end
 
+		v = VarTrack!
 		var = v\declare 'foo', 'decl_data'
 		v\define 'foo', 'def_data'
 		v\done!
@@ -55,13 +53,12 @@ describe 'VarTrack', ->
 
 
 	it 'diagnoses uninitialized locals', ->
-		v = VarTrack!
-
 		-- do
 		--   local foo
 		--   foo()
 		-- end
 
+		v = VarTrack!
 		var = v\declare 'foo', 'decl_data'
 		v\reference 'foo', 'ref_data'
 		v\done!
@@ -82,13 +79,12 @@ describe 'VarTrack', ->
 		}, v.diagnostics
 
 	it 'diagnoses shadowed locals', ->
-		v = VarTrack!
-
 		-- do
 		--   local foo
 		--   local foo
 		-- end
 
+		v = VarTrack!
 		var1 = v\declare 'foo', 'decl1_data'
 		var2 = v\declare 'foo', 'decl2_data'
 		v\done!
@@ -120,12 +116,11 @@ describe 'VarTrack', ->
 		}, v.diagnostics
 
 	it 'diagnoses defined globals', ->
-		v = VarTrack!
-
 		-- do
 		--   foo = 5
 		-- end
 
+		v = VarTrack!
 		v\define 'foo', 'def_data'
 		v\done!
 
