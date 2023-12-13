@@ -82,7 +82,7 @@ class VarTrack
 			for _, var in pairs @declared
 				push_global @, var
 
-		return
+		@diagnostics
 
 	scope: =>
 		result = VarTrack!

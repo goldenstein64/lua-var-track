@@ -118,6 +118,7 @@ do
           push_global(self, var)
         end
       end
+      return self.diagnostics
     end,
     scope = function(self)
       local result = VarTrack()

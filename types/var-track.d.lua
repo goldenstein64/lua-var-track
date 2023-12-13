@@ -77,6 +77,7 @@ function VarTrack:reference(name, data) end
 ---  -- ...
 ---end -- var_track:done()
 ---```
+---@return var-track.diagnostic[] diagnostics
 function VarTrack:done() end
 
 ---creates a new scope under this variable tracker

@@ -10,7 +10,7 @@ describe 'VarTrack', ->
 
 		v = VarTrack!
 		var = v\declare 'foo', 'decl_data'
-		v\done!
+		diagnostics = v\done!
 
 		assert.same {
 			{
@@ -25,7 +25,7 @@ describe 'VarTrack', ->
 					referenced: {}
 				}
 			}
-		}, v.diagnostics
+		}, diagnostics
 
 	it 'diagnoses unused defined locals', ->
 		-- do
@@ -36,7 +36,7 @@ describe 'VarTrack', ->
 		v = VarTrack!
 		var = v\declare 'foo', 'decl_data'
 		v\define 'foo', 'def_data'
-		v\done!
+		diagnostics = v\done!
 
 		assert.same {
 			{
@@ -51,7 +51,7 @@ describe 'VarTrack', ->
 					referenced: {}
 				}
 			}
-		}, v.diagnostics
+		}, diagnostics
 
 
 	it 'diagnoses uninitialized locals', ->
@@ -63,7 +63,7 @@ describe 'VarTrack', ->
 		v = VarTrack!
 		var = v\declare 'foo', 'decl_data'
 		v\reference 'foo', 'ref_data'
-		v\done!
+		diagnostics = v\done!
 
 		assert.same {
 			{
@@ -78,7 +78,7 @@ describe 'VarTrack', ->
 					referenced: { 'ref_data' }
 				}
 			}
-		}, v.diagnostics
+		}, diagnostics
 
 	it 'diagnoses shadowed locals', ->
 		-- do
@@ -89,7 +89,7 @@ describe 'VarTrack', ->
 		v = VarTrack!
 		var1 = v\declare 'foo', 'decl1_data'
 		var2 = v\declare 'foo', 'decl2_data'
-		v\done!
+		diagnostics = v\done!
 
 		expected_var1 = {
 			name: 'foo'
@@ -124,7 +124,7 @@ describe 'VarTrack', ->
 				data: 'decl1_data'
 				var: expected_var1
 			}
-		}, v.diagnostics
+		}, diagnostics
 
 	it 'diagnoses defined globals', ->
 		-- do
@@ -133,7 +133,7 @@ describe 'VarTrack', ->
 
 		v = VarTrack!
 		v\define 'foo', 'def_data'
-		v\done!
+		diagnostics = v\done!
 
 		assert.same {
 			{
@@ -148,7 +148,7 @@ describe 'VarTrack', ->
 					referenced: {}
 				}
 			}
-		}, v.diagnostics
+		}, diagnostics
 
 	it 'diagnoses unknown globals', ->
 		-- do
@@ -157,7 +157,7 @@ describe 'VarTrack', ->
 
 		v = VarTrack!
 		v\reference 'foo', 'ref_data'
-		v\done!
+		diagnostics = v\done!
 
 		assert.same {
 			{
@@ -172,7 +172,7 @@ describe 'VarTrack', ->
 					referenced: { 'ref_data' }
 				}
 			}
-		}, v.diagnostics
+		}, diagnostics
 
 	it 'diagnoses redefined constant', ->
 		-- do
@@ -187,7 +187,7 @@ describe 'VarTrack', ->
 		v\define 'foo', 'def1_data'
 		v\define 'foo', 'def2_data'
 		v\reference 'foo', 'ref_data'
-		v\done!
+		diagnostics = v\done!
 
 		assert.same {
 			{
@@ -202,7 +202,7 @@ describe 'VarTrack', ->
 					referenced: { 'ref_data' }
 				}
 			}
-		}, v.diagnostics
+		}, diagnostics
 
 	it "doesn't diagnose shadowed globals", ->
 		-- _G = { foo = 5 }
@@ -216,9 +216,9 @@ describe 'VarTrack', ->
 		v\declare 'foo', 'decl_data'
 		v\define 'foo', 'def2_data'
 		v\reference 'foo', 'ref_data'
-		v\done!
+		diagnostics = v\done!
 
-		assert.same {}, v.diagnostics
+		assert.same {}, diagnostics
 
 	it 'diagnoses unused shadowed locals', ->
 		-- do
@@ -235,7 +235,7 @@ describe 'VarTrack', ->
 		var2 = v\declare 'foo', 'decl2_data'
 		v\define 'foo', 'def2_data'
 		v\reference 'foo', 'ref2_data'
-		v\done!
+		diagnostics = v\done!
 
 		var1_data = {
 			name: 'foo'
@@ -256,7 +256,7 @@ describe 'VarTrack', ->
 				data: 'decl1_data'
 				var: var1_data
 			}
-		}, v.diagnostics
+		}, diagnostics
 
 	it 'diagnoses two unused locals', ->
 		-- do
@@ -271,7 +271,7 @@ describe 'VarTrack', ->
 		v\declare 'bar', 'decl2'
 		v\define 'foo', 'def1'
 		v\define 'bar', 'def2'
-		v\done!
+		diagnostics = v\done!
 
 		diag1 = types.shape {
 			type: 'unused_local'
@@ -301,7 +301,7 @@ describe 'VarTrack', ->
 		comb1 = types.shape { diag1, diag2 }
 		comb2 = types.shape { diag2, diag1 }
 
-		assert.shape v.diagnostics, types.one_of { comb1, comb2 }
+		assert.shape diagnostics, types.one_of { comb1, comb2 }
 
 	it 'lets inner globals reach outer scopes', ->
 		-- do
@@ -331,12 +331,12 @@ describe 'VarTrack', ->
 		v\declare 'foo'
 		w = v\scope!
 		w\define 'foo'
-		w\done!
+		w_diagnostics = w\done!
 		v\reference 'foo'
-		v\done!
+		v_diagnostics = v\done!
 
-		assert.same {}, w.diagnostics
-		assert.same {}, v.diagnostics
+		assert.same {}, w_diagnostics
+		assert.same {}, v_diagnostics
 
 	it 'can reference from an inner scope', ->
 		-- do
@@ -352,11 +352,11 @@ describe 'VarTrack', ->
 		v\define 'foo'
 		w = v\scope!
 		w\reference 'foo'
-		w\done!
-		v\done!
+		w_diagnostics = w\done!
+		v_diagnostics = v\done!
 
-		assert.same {}, w.diagnostics
-		assert.same {}, v.diagnostics
+		assert.same {}, w_diagnostics
+		assert.same {}, v_diagnostics
 
 	it 'cannot declare from an inner scope', ->
 		-- do
@@ -369,9 +369,9 @@ describe 'VarTrack', ->
 		v = VarTrack!
 		w = v\scope!
 		w\declare 'foo', 'decl'
-		w\done!
+		w_diagnostics = w\done!
 		v\define 'foo', 'def'
-		v\done!
+		v_diagnostics = v\done!
 
 		assert.same {
 			{
@@ -386,7 +386,7 @@ describe 'VarTrack', ->
 					referenced: {}
 				}
 			}
-		}, w.diagnostics
+		}, w_diagnostics
 
 		assert.same {
 			{
@@ -401,4 +401,4 @@ describe 'VarTrack', ->
 					referenced: {}
 				}
 			}
-		}, v.diagnostics
+		}, v_diagnostics
