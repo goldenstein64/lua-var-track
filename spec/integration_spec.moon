@@ -172,4 +172,33 @@ describe 'VarTrack', ->
 			}
 		}, v.diagnostics
 
+	it 'diagnoses redefined constant', ->
+		-- do
+		--   local foo ---@const
+		--   foo = 5
+		--   foo = 5
+		-- end
+
+		v = VarTrack!
+		foo = v\declare 'foo', 'decl_data'
+		foo.constant = true
+		v\define 'foo', 'def1_data'
+		v\define 'foo', 'def2_data'
+		v\reference 'foo', 'ref_data'
+
+		assert.same {
+			{
+				type: 'redefined_constant'
+				data: 'def2_data'
+				var: {
+					name: 'foo'
+					global: false
+					constant: true
+					declared: 'decl_data'
+					defined: { 'def1_data', 'def2_data' }
+					referenced: { 'ref_data' }
+				}
+			}
+		}, v.diagnostics
+
 
