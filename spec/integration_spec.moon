@@ -17,7 +17,7 @@ describe 'VarTrack', ->
 				var: {
 					name: 'foo'
 					global: false
-					const: false
+					constant: false
 					declared: 'decl_data'
 					defined: {}
 					referenced: {}
@@ -43,7 +43,7 @@ describe 'VarTrack', ->
 				var: {
 					name: 'foo'
 					global: false
-					const: false
+					constant: false
 					declared: 'decl_data'
 					defined: { 'def_data' }
 					referenced: {}
@@ -70,7 +70,7 @@ describe 'VarTrack', ->
 				var: {
 					name: 'foo'
 					global: false
-					const: false
+					constant: false
 					declared: 'decl_data'
 					defined: {}
 					referenced: { 'ref_data' }
@@ -92,7 +92,7 @@ describe 'VarTrack', ->
 		expected_var1 = {
 			name: 'foo'
 			global: false
-			const: false
+			constant: false
 			declared: 'decl1_data'
 			defined: {}
 			referenced: {}
@@ -101,7 +101,7 @@ describe 'VarTrack', ->
 		expected_var2 = {
 			name: 'foo'
 			global: false
-			const: false
+			constant: false
 			declared: 'decl2_data'
 			defined: {}
 			referenced: {}
@@ -140,7 +140,7 @@ describe 'VarTrack', ->
 				var: {
 					name: 'foo'
 					global: true
-					const: false
+					constant: false
 					declared: 'def_data'
 					defined: { 'def_data' }
 					referenced: {}
@@ -164,7 +164,7 @@ describe 'VarTrack', ->
 				var: {
 					name: 'foo'
 					global: true
-					const: false
+					constant: false
 					declared: 'ref_data'
 					defined: {}
 					referenced: { 'ref_data' }

@@ -8,7 +8,7 @@ local muun = require("var-track.muun")
 ---whether this variable is a global
 ---@field global boolean
 ---whether this variable is a constant
----@field const boolean
+---@field constant boolean
 ---where this variable is declared
 ---@field declared var-track.data
 ---where this variable is defined
@@ -41,7 +41,7 @@ function VarTrack:new(...)
 				global = true,
 				defined = {},
 				referenced = {},
-				const = false,
+				constant = false,
 			}
 		end
 	end
@@ -67,7 +67,7 @@ function VarTrack:declare(name, data)
 		global = false,
 		defined = {},
 		referenced = {},
-		const = false,
+		constant = false,
 		declared = data,
 	}
 
@@ -107,7 +107,7 @@ function VarTrack:define(name, data)
 			global = true,
 			defined = {},
 			referenced = {},
-			const = false,
+			constant = false,
 			declared = data
 		}
 		self.declared[name] = var_info
@@ -117,7 +117,7 @@ function VarTrack:define(name, data)
 		table.insert(self.diagnostics, diag)
 	end
 
-	if var_info.const and #var_info.defined > 0 then
+	if var_info.constant and #var_info.defined > 0 then
 		---@type var-track.diagnostic
 		local diag = { type = "redefined_constant", data = data, var = var_info }
 		table.insert(self.diagnostics, diag)
@@ -149,7 +149,7 @@ function VarTrack:reference(name, data)
 			global = true,
 			defined = {},
 			referenced = {},
-			const = false,
+			constant = false,
 			declared = data,
 		}
 
