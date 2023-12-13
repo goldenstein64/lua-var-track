@@ -318,4 +318,24 @@ describe 'VarTrack', ->
 
 		assert.truthy v.declared['foo']
 
+	it 'can define from an inner scope', ->
+		-- do
+		--   local foo
+		--   do
+		--     foo = 5
+		--   end
+		--   foo()
+		-- end
+
+		v = VarTrack!
+		v\declare 'foo'
+		w = v\scope!
+		w\define 'foo'
+		w\done!
+		v\reference 'foo'
+		v\done!
+
+		assert.same {}, w.diagnostics
+		assert.same {}, v.diagnostics
+
 
