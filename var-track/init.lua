@@ -2,7 +2,7 @@ local muun = require("var-track.muun")
 
 ---@alias var-track.data unknown
 
----@class var-track.var_info
+---@class var-track.var
 ---the name of this variable
 ---@field name string
 ---whether this variable is a global
@@ -16,15 +16,15 @@ local muun = require("var-track.muun")
 ---where this variable is referenced
 ---@field referenced var-track.data[]
 ---what this variable is shadowing
----@field shadow var-track.var_info?
+---@field shadow var-track.var?
 
 ---@class var-track.diagnostic
 ---@field type string
 ---@field data var-track.data
----@field var var-track.var_info
+---@field var var-track.var
 
 ---@class var-track.VarTrack
----@field declared { [string]: var-track.var_info }
+---@field declared { [string]: var-track.var }
 ---@field diagnostics var-track.diagnostic[]
 local VarTrack = muun("VarTrack")
 
@@ -59,14 +59,14 @@ end
 ---```
 ---@param name string
 ---@param data any
----@return var-track.var_info
+---@return var-track.var
 function VarTrack:declare(name, data)
 	if data == nil then
 		data = true
 	end
 
-	---@type var-track.var_info
-	local var_info = {
+	---@type var-track.var
+	local var = {
 		name = name,
 		global = false,
 		constant = false,
@@ -75,18 +75,18 @@ function VarTrack:declare(name, data)
 		referenced = {},
 	}
 
-	local old_var_info = self.declared[name]
-	if old_var_info then
-		if not old_var_info.global then
+	local old_var = self.declared[name]
+	if old_var then
+		if not old_var.global then
 			---@type var-track.diagnostic
-			local diag = { type = "shadowed_local", data = data, var = old_var_info }
+			local diag = { type = "shadowed_local", data = data, var = old_var }
 			table.insert(self.diagnostics, diag)
 		end
-		var_info.shadow = old_var_info
+		var.shadow = old_var
 	end
 
-	self.declared[name] = var_info
-	return var_info
+	self.declared[name] = var
+	return var
 end
 
 ---gives a variable called `name` a value
@@ -97,16 +97,16 @@ end
 ---```
 ---@param name string
 ---@param data? any
----@return var-track.var_info
+---@return var-track.var
 function VarTrack:define(name, data)
 	if data == nil then
 		data = true
 	end
 
-	local var_info = self.declared[name]
-	if not var_info then
-		---@type var-track.var_info
-		var_info = {
+	local var = self.declared[name]
+	if not var then
+		---@type var-track.var
+		var = {
 			name = name,
 			global = true,
 			constant = false,
@@ -114,21 +114,21 @@ function VarTrack:define(name, data)
 			defined = {},
 			referenced = {},
 		}
-		self.declared[name] = var_info
+		self.declared[name] = var
 
 		---@type var-track.diagnostic
-		local diag = { type = "defined_global", data = data, var = var_info }
+		local diag = { type = "defined_global", data = data, var = var }
 		table.insert(self.diagnostics, diag)
 	end
 
-	if var_info.constant and #var_info.defined > 0 then
+	if var.constant and #var.defined > 0 then
 		---@type var-track.diagnostic
-		local diag = { type = "redefined_constant", data = data, var = var_info }
+		local diag = { type = "redefined_constant", data = data, var = var }
 		table.insert(self.diagnostics, diag)
 	end
 
-	table.insert(var_info.defined, data)
-	return var_info
+	table.insert(var.defined, data)
+	return var
 end
 
 ---evaluates a variable called `name`
@@ -139,16 +139,16 @@ end
 ---```
 ---@param name string
 ---@param data? any
----@return var-track.var_info
+---@return var-track.var
 function VarTrack:reference(name, data)
 	if data == nil then
 		data = true
 	end
 
-	local var_info = self.declared[name]
-	if not var_info then
-		---@type var-track.var_info
-		var_info = {
+	local var = self.declared[name]
+	if not var then
+		---@type var-track.var
+		var = {
 			name = name,
 			global = true,
 			constant = false,
@@ -158,42 +158,42 @@ function VarTrack:reference(name, data)
 		}
 
 		-- I'm not sure if this is the best idea...
-		self.declared[name] = var_info
+		self.declared[name] = var
 
 		---@type var-track.diagnostic
-		local diag = { type = "unknown_global", data = data, var = var_info }
+		local diag = { type = "unknown_global", data = data, var = var }
 		table.insert(self.diagnostics, diag)
 	end
 
-	if not var_info.global and #var_info.defined <= 0 then
+	if not var.global and #var.defined <= 0 then
 		---@type var-track.diagnostic
-		local diag = { type = "uninitialized_local", data = data, var = var_info }
+		local diag = { type = "uninitialized_local", data = data, var = var }
 		table.insert(self.diagnostics, diag)
 	end
 
-	table.insert(var_info.referenced, data)
-	return var_info
+	table.insert(var.referenced, data)
+	return var
 end
 
 ---@param self var-track.VarTrack
----@param var_info var-track.var_info
-local function check_unused(self, var_info)
-	if not var_info.global and #var_info.referenced <= 0 then
+---@param var var-track.var
+local function check_unused(self, var)
+	if not var.global and #var.referenced <= 0 then
 		---@type var-track.diagnostic
-		local diag = { type = "unused_local", data = var_info.declared, var = var_info }
+		local diag = { type = "unused_local", data = var.declared, var = var }
 		table.insert(self.diagnostics, diag)
 	end
 
-	if var_info.shadow then
-		check_unused(self, var_info.shadow)
+	if var.shadow then
+		check_unused(self, var.shadow)
 	end
 end
 
 ---declares that this tracker's scope has ended. This adds diagnostics
 ---for unused locals
 function VarTrack:done()
-	for _, var_info in pairs(self.declared) do
-		check_unused(self, var_info)
+	for _, var in pairs(self.declared) do
+		check_unused(self, var)
 	end
 end
 
