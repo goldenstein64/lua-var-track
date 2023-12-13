@@ -256,4 +256,43 @@ describe 'VarTrack', ->
 			}
 		}, v.diagnostics
 
+	it 'diagnoses two unused locals', ->
+		-- do
+		--   local foo
+		--   local bar
+		--   foo = 5
+		--   bar = 5
+		-- end
 
+		v = VarTrack!
+		v\declare 'foo', 'decl1'
+		v\declare 'bar', 'decl2'
+		v\define 'foo', 'def1'
+		v\define 'bar', 'def2'
+		v\done!
+
+		assert.same {
+			{
+				type: 'unused_local'
+				data: 'decl1'
+				var: {
+					name: 'foo'
+					global: false
+					constant: false
+					declared: 'decl1'
+					defined: { 'def1' }
+					referenced: {}
+				}
+			}, {
+				type: 'unused_local'
+				data: 'decl2'
+				var: {
+					name: 'bar'
+					global: false
+					constant: false
+					declared: 'decl2'
+					defined: { 'def2' }
+					referenced: {}
+				}
+			}
+		}, v.diagnostics
