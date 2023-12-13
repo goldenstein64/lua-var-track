@@ -1,3 +1,5 @@
+import types from require 'tableshape'
+
 VarTrack = require 'var-track'
 
 describe 'VarTrack', ->
@@ -271,31 +273,35 @@ describe 'VarTrack', ->
 		v\define 'bar', 'def2'
 		v\done!
 
-		assert.same {
-			{
-				type: 'unused_local'
-				data: 'decl1'
-				var: {
-					name: 'foo'
-					global: false
-					constant: false
-					declared: 'decl1'
-					defined: { 'def1' }
-					referenced: {}
-				}
-			}, {
-				type: 'unused_local'
-				data: 'decl2'
-				var: {
-					name: 'bar'
-					global: false
-					constant: false
-					declared: 'decl2'
-					defined: { 'def2' }
-					referenced: {}
-				}
+		diag1 = types.shape {
+			type: 'unused_local'
+			data: 'decl1'
+			var: types.shape {
+				name: 'foo'
+				global: false
+				constant: false
+				declared: 'decl1'
+				defined: types.shape { 'def1' }
+				referenced: types.shape {}
 			}
-		}, v.diagnostics
+		}
+		diag2 = types.shape {
+			type: 'unused_local'
+			data: 'decl2'
+			var: types.shape {
+				name: 'bar'
+				global: false
+				constant: false
+				declared: 'decl2'
+				defined: types.shape { 'def2' }
+				referenced: types.shape {}
+			}
+		}
+
+		comb1 = types.shape { diag1, diag2 }
+		comb2 = types.shape { diag2, diag1 }
+
+		assert.shape v.diagnostics, types.one_of { comb1, comb2 }
 
 	it 'lets inner globals reach outer scopes', ->
 		-- do

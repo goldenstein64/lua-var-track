@@ -1,5 +1,6 @@
 return {
 	_all = {
-		output = "plainTerminal"
+		output = "plainTerminal",
+		helper = "spec/helper/init.lua",
 	}
 }
