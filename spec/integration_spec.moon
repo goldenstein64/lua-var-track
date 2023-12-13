@@ -105,7 +105,7 @@ describe 'VarTrack', ->
 			declared: 'decl2_data'
 			defined: {}
 			referenced: {}
-			shadowing: expected_var1
+			shadow: expected_var1
 		}
 
 		assert.same {
@@ -210,7 +210,7 @@ describe 'VarTrack', ->
 		--   foo()
 		-- end
 
-		v = VarTrack 'foo'
+		v = VarTrack { 'foo' }
 		v\declare 'foo', 'decl_data'
 		v\define 'foo', 'def2_data'
 		v\reference 'foo', 'ref_data'
