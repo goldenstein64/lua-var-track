@@ -18,6 +18,24 @@ local muun = require("var-track.muun")
 ---what this variable is shadowing
 ---@field shadow var-track.var?
 
+---@param name string
+---@param declared? var-track.data
+---@return var-track.var
+local function VarInfo(name, declared)
+	if declared == nil then
+		declared = true
+	end
+
+	return {
+		name = name,
+		global = false,
+		constant = false,
+		declared = declared,
+		defined = {},
+		referenced = {},
+	}
+end
+
 ---@class var-track.diagnostic
 ---@field type string
 ---@field data var-track.data
@@ -39,14 +57,10 @@ function VarTrack:new(globals)
 	self.diagnostics = {}
 	if globals then
 		for _, name in ipairs(globals) do
-			self.declared[name] = {
-				name = name,
-				global = true,
-				constant = false,
-				declared = true,
-				defined = {},
-				referenced = {},
-			}
+			---@type var-track.var
+			local var = VarInfo(name)
+			var.global = true
+			self.declared[name] = var
 		end
 	end
 end
@@ -66,15 +80,9 @@ function VarTrack:declare(name, data)
 	end
 
 	---@type var-track.var
-	local var = {
-		name = name,
-		global = false,
-		constant = false,
-		declared = data,
-		defined = {},
-		referenced = {},
-	}
+	local var = VarInfo(name, data)
 
+	---@type var-track.var
 	local old_var = self.declared[name]
 	if old_var then
 		if not old_var.global then
@@ -103,17 +111,11 @@ function VarTrack:define(name, data)
 		data = true
 	end
 
+	---@type var-track.var
 	local var = self.declared[name]
 	if not var then
-		---@type var-track.var
-		var = {
-			name = name,
-			global = true,
-			constant = false,
-			declared = data,
-			defined = {},
-			referenced = {},
-		}
+		var = VarInfo(name, data)
+		var.global = true
 		self.declared[name] = var
 
 		---@type var-track.diagnostic
@@ -145,17 +147,11 @@ function VarTrack:reference(name, data)
 		data = true
 	end
 
+	---@type var-track.var
 	local var = self.declared[name]
 	if not var then
-		---@type var-track.var
-		var = {
-			name = name,
-			global = true,
-			constant = false,
-			declared = data,
-			defined = {},
-			referenced = {},
-		}
+		var = VarInfo(name, data)
+		var.global = true
 
 		-- I'm not sure if this is the best idea...
 		self.declared[name] = var
