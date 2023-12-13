@@ -218,4 +218,42 @@ describe 'VarTrack', ->
 
 		assert.same {}, v.diagnostics
 
+	it 'diagnoses unused shadowed locals', ->
+		-- do
+		--   local foo
+		--   foo = 5
+		--   local foo
+		--   foo = 5
+		--   foo()
+		-- end
+
+		v = VarTrack!
+		var1 = v\declare 'foo', 'decl1_data'
+		v\define 'foo', 'def1_data'
+		var2 = v\declare 'foo', 'decl2_data'
+		v\define 'foo', 'def2_data'
+		v\reference 'foo', 'ref2_data'
+		v\done!
+
+		var1_data = {
+			name: 'foo'
+			global: false
+			constant: false
+			declared: 'decl1_data'
+			defined: { 'def1_data' }
+			referenced: {}
+		}
+
+		assert.same {
+			{
+				type: 'shadowed_local'
+				data: 'decl2_data'
+				var: var1_data
+			}, {
+				type: 'unused_local'
+				data: 'decl1_data'
+				var: var1_data
+			}
+		}, v.diagnostics
+
 
