@@ -50,7 +50,7 @@ class VarTrack
 			insert @diagnostics, { type: 'redefined_constant', :data, :var }
 
 		insert var.defined, data
-		var
+		return
 
 	reference: (name, data=true) =>
 		var = @declared[name]
@@ -67,10 +67,11 @@ class VarTrack
 			insert @diagnostics, { type: 'uninitialized_local', :data, :var }
 
 		insert var.referenced, data
-		var
+		return
 
 	done: =>
 		check_unused @, var for _, var in pairs @declared
+		return
 
 	scope: =>
 		result = VarTrack!
