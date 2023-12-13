@@ -2,11 +2,17 @@ rockspec_format = "3.0"
 package = "var-track"
 version = "dev-1"
 source = {
-   url = "*** please add URL for source tarball, zip or repository here ***"
+   url = "https://github.com/goldenstein64/lua-var-track"
 }
 description = {
-   homepage = "*** please enter a project homepage ***",
-   license = "*** please specify a license ***"
+   homepage = "https://github.com/goldenstein64/lua-var-track",
+   license = "MIT",
+   summary = "A small meta-module for tracking the state of variables in a Lua-ish program",
+   detailed = [[
+      This module offers a minimal API for tracking variables in a program by
+      calling its methods in the order variables appear in the program.
+      Diagnostics are generated in its field of the same name.
+   ]]
 }
 test_dependencies = {
    "busted ~> 2.2",
@@ -16,7 +22,7 @@ test = {
    type = 'busted'
 }
 dependencies = {
-   "lua ~> 5.1"
+   "lua >= 5.1"
 }
 build = {
    type = "builtin",
