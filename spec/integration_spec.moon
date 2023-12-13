@@ -338,4 +338,22 @@ describe 'VarTrack', ->
 		assert.same {}, w.diagnostics
 		assert.same {}, v.diagnostics
 
+	it 'can reference from an inner scope', ->
+		-- do
+		--   local foo
+		--   foo = 5
+		--   do
+		--     foo()
+		--   end
+		-- end
 
+		v = VarTrack!
+		v\declare 'foo'
+		v\define 'foo'
+		w = v\scope!
+		w\reference 'foo'
+		w\done!
+		v\done!
+
+		assert.same {}, w.diagnostics
+		assert.same {}, v.diagnostics
