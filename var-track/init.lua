@@ -29,16 +29,16 @@ local muun = require("var-track.muun")
 local VarTrack = muun("VarTrack")
 
 ---@class var-track.VarTrack.Class
----@overload fun(...: string): var-track.VarTrack
+---@overload fun(globals?: string[]): var-track.VarTrack
 local VarTrackClass = VarTrack --[[@as var-track.VarTrack.Class]]
 
 ---declares a new scope
----@param ... string
-function VarTrack:new(...)
+---@param globals? string[]
+function VarTrack:new(globals)
 	self.declared = {}
 	self.diagnostics = {}
-	if select("#", ...) > 0 then
-		for _, name in ipairs({ ... }) do
+	if globals then
+		for _, name in ipairs(globals) do
 			self.declared[name] = {
 				name = name,
 				global = true,
