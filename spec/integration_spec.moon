@@ -185,6 +185,7 @@ describe 'VarTrack', ->
 		v\define 'foo', 'def1_data'
 		v\define 'foo', 'def2_data'
 		v\reference 'foo', 'ref_data'
+		v\done!
 
 		assert.same {
 			{
