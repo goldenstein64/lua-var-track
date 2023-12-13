@@ -16,11 +16,10 @@ check_unused = (var) =>
 
 	check_unused @, var.shadow if var.shadow
 
-push_globals = (var) =>
-	if var.global and @parent
-		@parent.declared[var.name] = var
+push_global = (var) =>
+	@parent.declared[var.name] = var if var.global
 
-	push_globals @, var.shadow if var.shadow
+	push_global @, var.shadow if var.shadow
 
 class VarTrack
 	new: (globals) =>
@@ -78,7 +77,10 @@ class VarTrack
 	done: =>
 		for _, var in pairs @declared
 			check_unused @, var
-			push_globals @, var
+
+		if @parent
+			for _, var in pairs @declared
+				push_global @, var
 
 		return
 
