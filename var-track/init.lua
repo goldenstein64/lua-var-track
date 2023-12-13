@@ -1,6 +1,6 @@
 local muun = require("var-track.muun")
 
----@alias var-track.data any
+---@alias var-track.data unknown
 
 ---@class var-track.var_info
 ---the name of this variable
@@ -39,6 +39,7 @@ function VarTrack:new(...)
 			self.declared[name] = {
 				name = name,
 				global = true,
+				declared = true,
 				defined = {},
 				referenced = {},
 				constant = false,
