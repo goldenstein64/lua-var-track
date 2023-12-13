@@ -297,7 +297,7 @@ describe 'VarTrack', ->
 			}
 		}, v.diagnostics
 
-	it 'lets inner globals reach outer scope', ->
+	it 'lets inner globals reach outer scopes', ->
 		-- do
 		--   do
 		--     foo = 5
