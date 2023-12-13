@@ -357,3 +357,48 @@ describe 'VarTrack', ->
 
 		assert.same {}, w.diagnostics
 		assert.same {}, v.diagnostics
+
+	it 'cannot declare from an inner scope', ->
+		-- do
+		--   do
+		--     local foo
+		--   end
+		--   foo = 5
+		-- end
+
+		v = VarTrack!
+		w = v\scope!
+		w\declare 'foo', 'decl'
+		w\done!
+		v\define 'foo', 'def'
+		v\done!
+
+		assert.same {
+			{
+				type: 'unused_local'
+				data: 'decl'
+				var: {
+					name: 'foo'
+					global: false
+					constant: false
+					declared: 'decl'
+					defined: {}
+					referenced: {}
+				}
+			}
+		}, w.diagnostics
+
+		assert.same {
+			{
+				type: 'defined_global'
+				data: 'def'
+				var: {
+					name: 'foo'
+					global: true
+					constant: false
+					declared: 'def'
+					defined: { 'def' }
+					referenced: {}
+				}
+			}
+		}, v.diagnostics
