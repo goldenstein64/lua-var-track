@@ -30,6 +30,7 @@ local VarTrackClass = {}
 ---@class var-track.VarTrack
 ---@field declared { [string]: var-track.var }
 ---@field diagnostics var-track.diagnostic[]
+---@field parent var-track.VarTrack
 local VarTrack = {}
 
 ---declares a variable `name`

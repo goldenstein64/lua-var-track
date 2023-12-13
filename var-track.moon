@@ -16,6 +16,12 @@ check_unused = (var) =>
 
 	check_unused @, var.shadow if var.shadow
 
+push_globals = (var) =>
+	if var.global and @parent
+		@parent.declared[var.name] = var
+
+	push_globals @, var.shadow if var.shadow
+
 class VarTrack
 	new: (globals) =>
 		@diagnostics = {}
@@ -70,11 +76,15 @@ class VarTrack
 		return
 
 	done: =>
-		check_unused @, var for _, var in pairs @declared
+		for _, var in pairs @declared
+			check_unused @, var
+			push_globals @, var
+
 		return
 
 	scope: =>
 		result = VarTrack!
+		result.parent = @
 		setmetatable result.declared, { __index: @declared }
 		result
 

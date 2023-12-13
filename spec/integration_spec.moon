@@ -296,3 +296,20 @@ describe 'VarTrack', ->
 				}
 			}
 		}, v.diagnostics
+
+	it 'lets inner globals reach outer scope', ->
+		-- do
+		--   do
+		--     foo = 5
+		--   end
+		-- end
+
+		v = VarTrack!
+		w = v\scope!
+		global = w\define 'foo', 'def'
+		w\done!
+		v\done!
+
+		assert.truthy v.declared['foo']
+
+
