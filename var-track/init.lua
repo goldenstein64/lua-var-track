@@ -16,7 +16,7 @@ local muun = require("var-track.muun")
 ---where this variable is referenced
 ---@field referenced var-track.data[]
 ---what this variable is shadowing
----@field shadowing var-track.var_info?
+---@field shadow var-track.var_info?
 
 ---@class var-track.diagnostic
 ---@field type string
@@ -82,7 +82,7 @@ function VarTrack:declare(name, data)
 			local diag = { type = "shadowed_local", data = data, var = old_var_info }
 			table.insert(self.diagnostics, diag)
 		end
-		var_info.shadowing = old_var_info
+		var_info.shadow = old_var_info
 	end
 
 	self.declared[name] = var_info
@@ -184,8 +184,8 @@ local function check_unused(self, var_info)
 		table.insert(self.diagnostics, diag)
 	end
 
-	if var_info.shadowing then
-		check_unused(self, var_info.shadowing)
+	if var_info.shadow then
+		check_unused(self, var_info.shadow)
 	end
 end
 
