@@ -42,10 +42,10 @@ function VarTrack:new(...)
 			self.declared[name] = {
 				name = name,
 				global = true,
+				constant = false,
 				declared = true,
 				defined = {},
 				referenced = {},
-				constant = false,
 			}
 		end
 	end
@@ -69,10 +69,10 @@ function VarTrack:declare(name, data)
 	local var_info = {
 		name = name,
 		global = false,
-		defined = {},
-		referenced = {},
 		constant = false,
 		declared = data,
+		defined = {},
+		referenced = {},
 	}
 
 	local old_var_info = self.declared[name]
@@ -109,10 +109,10 @@ function VarTrack:define(name, data)
 		var_info = {
 			name = name,
 			global = true,
+			constant = false,
+			declared = data,
 			defined = {},
 			referenced = {},
-			constant = false,
-			declared = data
 		}
 		self.declared[name] = var_info
 
@@ -151,10 +151,10 @@ function VarTrack:reference(name, data)
 		var_info = {
 			name = name,
 			global = true,
-			defined = {},
-			referenced = {},
 			constant = false,
 			declared = data,
+			defined = {},
+			referenced = {},
 		}
 
 		-- I'm not sure if this is the best idea...
