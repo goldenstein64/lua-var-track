@@ -26,8 +26,11 @@ local muun = require("var-track.muun")
 ---@class var-track.VarTrack
 ---@field declared { [string]: var-track.var_info }
 ---@field diagnostics var-track.diagnostic[]
----@overload fun(...: string): var-track.VarTrack
 local VarTrack = muun("VarTrack")
+
+---@class var-track.VarTrack.Class
+---@overload fun(...: string): var-track.VarTrack
+local VarTrackClass = VarTrack --[[@as var-track.VarTrack.Class]]
 
 ---declares a new scope
 ---@param ... string
@@ -202,4 +205,4 @@ function VarTrack:scope()
 	return result
 end
 
-return VarTrack
+return VarTrackClass
