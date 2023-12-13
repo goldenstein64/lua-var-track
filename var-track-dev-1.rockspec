@@ -20,5 +20,8 @@ dependencies = {
 }
 build = {
    type = "builtin",
-   modules = {}
+   modules = {
+      ["var-track"] = "var-track.lua"
+   },
+   copy_directories = { "types" }
 }
