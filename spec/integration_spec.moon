@@ -202,4 +202,20 @@ describe 'VarTrack', ->
 			}
 		}, v.diagnostics
 
+	it "doesn't diagnose shadowed globals", ->
+		-- _G = { foo = 5 }
+		-- do
+		--   local foo
+		--   foo = 5
+		--   foo()
+		-- end
+
+		v = VarTrack 'foo'
+		v\declare 'foo', 'decl_data'
+		v\define 'foo', 'def2_data'
+		v\reference 'foo', 'ref_data'
+		v\done!
+
+		assert.same {}, v.diagnostics
+
 
