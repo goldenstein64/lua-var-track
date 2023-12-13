@@ -1,22 +1,32 @@
 ---@meta
 
----@alias var-track.data unknown
-
+---holds all data pertaining to the usage of a variable
 ---@class var-track.var
+---the variable's name
 ---@field name string
+---whether the variable is global
 ---@field global boolean
+---whether the variable is a constant
 ---@field constant boolean
----@field declared var-track.data
----@field defined var-track.data[]
----@field referenced var-track.data[]
+---where the variable was declared
+---@field declared any
+---where the variable was defined
+---@field defined any[]
+---where the variable was referenced
+---@field referenced any[]
 
+---a diagnostic emission. It typically represents a problem with how a variable
+---was used.
 ---@class var-track.diagnostic
+---the type of diagnostic
 ---@field type string
----@field data var-track.data
+---data associated with the diagnostic
+---@field data any
+---the variable affected by the diagnostic
 ---@field var var-track.var
 
 ---a class that implements variable tracking. Instantiating this means creating
----a scope. This is typically used to represent the root scope.
+---a scope. This is typically used to represent a module's root scope.
 ---
 ---```lua
 ---do -- var_track = VarTrack()
@@ -39,7 +49,7 @@ local VarTrack = {}
 ---local foo -- var_track:declare('foo')
 ---```
 ---@param name string
----@param data? var-track.data
+---@param data? any
 ---@return var-track.var
 function VarTrack:declare(name, data) end
 
@@ -49,7 +59,7 @@ function VarTrack:declare(name, data) end
 ---foo = 5 -- var_track:define('foo')
 ---```
 ---@param name string
----@param data? var-track.data
+---@param data? any
 function VarTrack:define(name, data) end
 
 ---references a variable `name`
@@ -58,7 +68,7 @@ function VarTrack:define(name, data) end
 ---foo() -- var_track:reference('foo')
 ---```
 ---@param name string
----@param data? var-track.data
+---@param data? any
 function VarTrack:reference(name, data) end
 
 ---ends this variable tracker's scope
