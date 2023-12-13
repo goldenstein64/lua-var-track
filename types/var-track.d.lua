@@ -32,6 +32,28 @@
 ---do -- var_track = VarTrack()
 ---  -- ...
 ---```
+---
+---Examples:
+---
+---```lua
+----- local globals = {}
+----- for k in pairs(_G) do
+-----   table.insert(globals, k)
+----- end
+----- local var_track = VarTrack(globals)
+---
+---local foo = 5
+----- var_track:declare("foo")
+----- var_track:define("foo")
+---
+---foo = foo * 10
+----- var_track:reference("foo")
+----- var_track:define("foo")
+---
+---print(foo)
+----- var_track:reference("print")
+----- var_track:reference("foo")
+---```
 ---@class var-track.VarTrack.Class
 ---@overload fun(globals?: string[]): var-track.VarTrack
 local VarTrackClass = {}
@@ -48,8 +70,12 @@ local VarTrack = {}
 ---```lua
 ---local foo -- var_track:declare('foo')
 ---```
+---
+---The `data` argument is used to store extra information about a variable and
+---any diagnostics it generates. The typical use case is location information,
+---like a start and end range.
 ---@param name string
----@param data? any
+---@param data? any -- defaults to `true`
 ---@return var-track.var
 function VarTrack:declare(name, data) end
 
@@ -58,8 +84,12 @@ function VarTrack:declare(name, data) end
 ---```lua
 ---foo = 5 -- var_track:define('foo')
 ---```
+---
+---The `data` argument is used to store extra information about a variable and
+---any diagnostics it generates. The typical use case is location information,
+---like a start and end range.
 ---@param name string
----@param data? any
+---@param data? any -- defaults to `true`
 function VarTrack:define(name, data) end
 
 ---references a variable `name`
@@ -67,8 +97,12 @@ function VarTrack:define(name, data) end
 ---```lua
 ---foo() -- var_track:reference('foo')
 ---```
+---
+---The `data` argument is used to store extra information about a variable and
+---any diagnostics it generates. The typical use case is location information,
+---like a start and end range.
 ---@param name string
----@param data? any
+---@param data? any -- defaults to `true`
 function VarTrack:reference(name, data) end
 
 ---ends this variable tracker's scope
