@@ -40,12 +40,11 @@
 ---@field var var-track.var
 
 ---a class that implements variable tracking. Instantiating this means a
----program has begun. This is typically used to represent a module's root
----scope.
+---program has begun.
 ---
 ---```lua
----do -- var_track = VarTrack()
----  -- ...
+----- beginning of program
+----- local var_track = VarTrack(globals)
 ---```
 ---
 ---Examples:
@@ -86,9 +85,8 @@ local VarTrack = {}
 ---local foo -- var_track:declare('foo')
 ---```
 ---
----The `data` argument is used to store extra information about a variable and
----any diagnostics it generates. The typical use case is location information,
----like a start and end range.
+---The `data` argument is used to store extra information about the variable's
+---declaration.
 ---@param name string
 ---@param data? any -- defaults to `true`
 ---@return var-track.var
@@ -100,9 +98,8 @@ function VarTrack:declare(name, data) end
 ---foo = 5 -- var_track:define('foo')
 ---```
 ---
----The `data` argument is used to store extra information about a variable and
----any diagnostics it generates. The typical use case is location information,
----like a start and end range.
+---The `data` argument is used to store extra information about the variable's
+---definition.
 ---@param name string
 ---@param data? any -- defaults to `true`
 function VarTrack:define(name, data) end
@@ -113,9 +110,8 @@ function VarTrack:define(name, data) end
 ---foo() -- var_track:reference('foo')
 ---```
 ---
----The `data` argument is used to store extra information about a variable and
----any diagnostics it generates. The typical use case is location information,
----like a start and end range.
+---The `data` argument is used to store extra information about the variable's
+---reference.
 ---@param name string
 ---@param data? any -- defaults to `true`
 function VarTrack:reference(name, data) end
@@ -132,9 +128,8 @@ function VarTrack:done() end
 ---creates a new scope under this variable tracker
 ---
 ---```lua
+---do -- sub_track = var_track:scope()
 ---  -- ...
----  do -- sub_track = var_track:scope()
----    -- ...
 ---```
 ---@return var-track.VarTrack
 function VarTrack:scope() end
