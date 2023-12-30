@@ -10,8 +10,8 @@ description = {
    summary = "A small meta-module for tracking the state of variables in a Lua-ish program",
    detailed = [[
       This module offers a minimal API for tracking variables in a program by
-      calling its methods in the order variables appear in the program.
-      Diagnostics are generated in its field of the same name.
+      calling its methods in the order variables are used in the program.
+      Diagnostics are also generated.
    ]]
 }
 test_dependencies = {
