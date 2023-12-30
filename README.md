@@ -77,25 +77,21 @@ Whenever the tracker detects improper usage of a variable, it appends a table to
 
 The `type` field can be one of the following strings:
 - `"unused_local"` - a local was declared but never referenced
-  - `data` holds `var`'s declaration data
   - `var` holds the variable that wasn't used
 - `"shadowed_local"` - a local was re-declared over another local
-  - `data` holds the new variable's declaration data
-  - `var` holds the old variable
-- `"defined_global"` - a global was defined
-  - `data` holds the variable's definition data
+  - `var` holds the new variable. The old variable is in its `shadow` field.
+- `"defined_global"` - a *new* global was defined
   - `var` holds the global that was defined
 - `"redefined_constant"` - a constant was defined more than once
   - `data` holds the new definition data
   - `var` holds the constant that was redefined
-- `"unknown_global"` - a global was referenced but never defined
-  - `data` holds the variable's reference data
-  - `var` holds the global that was referenced
+- `"unknown_global"` - a global was referenced but never defined. This creates a new global.
+  - `var` holds the global that was referenced and generated
 - `"uninitialized_local"` - a local was referenced but never defined
-  - `data` holds the variable's reference data
+  - `data` holds the new reference data
   - `var` holds the variable that was referenced
 
-The `data` variable holds the value passed in as a second argument to the variable usage method that generated this diagnostic.
+If the `data` field is present, it holds the value passed in as a second argument to the variable usage method that generated this diagnostic. If it's not present, it's can be found in the variable's info table.
 
 The `var` field is a reference to a variable table in `tracker.declared`.
 

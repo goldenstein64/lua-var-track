@@ -12,7 +12,7 @@ VarInfo = (name, declared=true) ->
 
 check_unused = (var) =>
 	if not var.global and #var.referenced <= 0
-		insert @diagnostics, { type: 'unused_local', data: var.declared, :var }
+		insert @diagnostics, { type: 'unused_local', :var }
 
 	check_unused @, var.shadow if var.shadow
 
@@ -36,8 +36,8 @@ class VarTrack
 
 		if old_var = @declared[name]
 			if not old_var.global
-				insert @diagnostics, { type: 'shadowed_local', :data, var: old_var }
-			var.shadow = old_var
+				insert @diagnostics, { type: 'shadowed_local', :var }
+				var.shadow = old_var
 
 		@declared[name] = var
 		var
@@ -49,7 +49,7 @@ class VarTrack
 			var.global = true
 			@declared[name] = var
 
-			insert @diagnostics, { type: 'defined_global', :data, :var }
+			insert @diagnostics, { type: 'defined_global', :var }
 
 		if var.constant and #var.defined > 0
 			insert @diagnostics, { type: 'redefined_constant', :data, :var }
@@ -66,7 +66,7 @@ class VarTrack
 			-- I'm not sure if this is the best idea...
 			@declared[name] = var
 
-			insert @diagnostics, { type: 'unknown_global', :data, :var }
+			insert @diagnostics, { type: 'unknown_global', :var }
 
 		if not var.global and #var.defined <= 0
 			insert @diagnostics, { type: 'uninitialized_local', :data, :var }

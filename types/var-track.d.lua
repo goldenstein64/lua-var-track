@@ -14,30 +14,50 @@
 ---@field defined any[]
 ---where the variable was referenced
 ---@field referenced any[]
+---the variable this is shadowing if any
+---@field shadow var-track.var?
 
----@alias var-track.diagnostic.type
 ---a local was declared but never referenced
----| "unused_local"
+---@class var-track.diagnostic.unused_local
+---@field type "unused_local"
+---@field var var-track.var
+
 ---a local was re-declared over another local
----| "shadowed_local"
----a global was defined
----| "defined_global"
+---@class var-track.diagnostic.shadowed_local
+---@field type "shadowed_local"
+---@field var var-track.var
+
+---a *new* global was defined
+---@class var-track.diagnostic.defined_global
+---@field type "defined_global"
+---@field var var-track.var
+
 ---a constant was defined more than once
----| "redefined_constant"
+---@class var-track.diagnostic.redefined_constant
+---@field type "redefined_constant"
+---@field data any
+---@field var var-track.var
+
 ---a global was referenced but never defined
----| "unknown_global"
+---@class var-track.diagnostic.unknown_global
+---@field type "unknown_global"
+---@field var var-track.var
+
 ---a local was referenced but never defined
----| "uninitialized_local"
+---@class var-track.diagnostic.uninitialized_local
+---@field type "uninitialized_local"
+---@field data any
+---@field var var-track.var
 
 ---a diagnostic emission. It typically represents a problem with how a variable
 ---was used.
----@class var-track.diagnostic
----the type of diagnostic
----@field type var-track.diagnostic.type
----data associated with the diagnostic
----@field data any
----the variable affected by the diagnostic
----@field var var-track.var
+---@alias var-track.diagnostic
+---| var-track.diagnostic.unused_local
+---| var-track.diagnostic.shadowed_local
+---| var-track.diagnostic.defined_global
+---| var-track.diagnostic.redefined_constant
+---| var-track.diagnostic.unknown_global
+---| var-track.diagnostic.uninitialized_local
 
 ---a class that implements variable tracking. Instantiating this means a
 ---program has begun.

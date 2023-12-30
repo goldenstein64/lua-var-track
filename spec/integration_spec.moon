@@ -15,7 +15,6 @@ describe 'VarTrack', ->
 		assert.same {
 			{
 				type: 'unused_local'
-				data: 'decl_data'
 				var: {
 					name: 'foo'
 					global: false
@@ -41,7 +40,6 @@ describe 'VarTrack', ->
 		assert.same {
 			{
 				type: 'unused_local'
-				data: 'decl_data'
 				var: {
 					name: 'foo'
 					global: false
@@ -113,15 +111,12 @@ describe 'VarTrack', ->
 		assert.same {
 			{ -- caught in second declaration
 				type: 'shadowed_local'
-				data: 'decl2_data'
-				var: expected_var1
-			}, { -- caught when scope ends
-				type: 'unused_local'
-				data: 'decl2_data'
 				var: expected_var2
 			}, { -- caught when scope ends
 				type: 'unused_local'
-				data: 'decl1_data'
+				var: expected_var2
+			}, { -- caught when scope ends
+				type: 'unused_local'
 				var: expected_var1
 			}
 		}, diagnostics
@@ -138,7 +133,6 @@ describe 'VarTrack', ->
 		assert.same {
 			{
 				type: 'defined_global'
-				data: 'def_data'
 				var: {
 					name: 'foo'
 					global: true
@@ -162,7 +156,6 @@ describe 'VarTrack', ->
 		assert.same {
 			{
 				type: 'unknown_global'
-				data: 'ref_data'
 				var: {
 					name: 'foo'
 					global: true
@@ -246,14 +239,22 @@ describe 'VarTrack', ->
 			referenced: {}
 		}
 
+		var2_data = {
+			name: 'foo'
+			global: false
+			constant: false
+			declared: 'decl2_data'
+			defined: { 'def2_data' }
+			referenced: { 'ref2_data' }
+			shadow: var1_data
+		}
+
 		assert.same {
 			{
 				type: 'shadowed_local'
-				data: 'decl2_data'
-				var: var1_data
+				var: var2_data
 			}, {
 				type: 'unused_local'
-				data: 'decl1_data'
 				var: var1_data
 			}
 		}, diagnostics
@@ -275,7 +276,6 @@ describe 'VarTrack', ->
 
 		diag1 = types.shape {
 			type: 'unused_local'
-			data: 'decl1'
 			var: types.shape {
 				name: 'foo'
 				global: false
@@ -287,7 +287,6 @@ describe 'VarTrack', ->
 		}
 		diag2 = types.shape {
 			type: 'unused_local'
-			data: 'decl2'
 			var: types.shape {
 				name: 'bar'
 				global: false
@@ -376,7 +375,6 @@ describe 'VarTrack', ->
 		assert.same {
 			{
 				type: 'unused_local'
-				data: 'decl'
 				var: {
 					name: 'foo'
 					global: false
@@ -391,7 +389,6 @@ describe 'VarTrack', ->
 		assert.same {
 			{
 				type: 'defined_global'
-				data: 'def'
 				var: {
 					name: 'foo'
 					global: true
