@@ -15,18 +15,33 @@
 ---where the variable was referenced
 ---@field referenced any[]
 
+---@alias var-track.diagnostic.type
+---a local was declared but never referenced
+---| "unused_local"
+---a local was re-declared over another local
+---| "shadowed_local"
+---a global was defined
+---| "defined_global"
+---a constant was defined more than once
+---| "redefined_constant"
+---a global was referenced but never defined
+---| "unknown_global"
+---a local was referenced but never defined
+---| "uninitialized_local"
+
 ---a diagnostic emission. It typically represents a problem with how a variable
 ---was used.
 ---@class var-track.diagnostic
 ---the type of diagnostic
----@field type string
+---@field type var-track.diagnostic.type
 ---data associated with the diagnostic
 ---@field data any
 ---the variable affected by the diagnostic
 ---@field var var-track.var
 
----a class that implements variable tracking. Instantiating this means creating
----a scope. This is typically used to represent a module's root scope.
+---a class that implements variable tracking. Instantiating this means a
+---program has begun. This is typically used to represent a module's root
+---scope.
 ---
 ---```lua
 ---do -- var_track = VarTrack()
