@@ -45,8 +45,8 @@ tracker:reference("print", { data, ... }) -- print(x)
 tracker:reference("x", { data, ... }) -- print(x)
 
 -- end of the program
-tracker:done()
--- analyze tracker.diagnostics and tracker.declared
+local diagnostics = tracker:done()
+-- analyze diagnostics and tracker.declared
 ```
 
 The `var-track` module is a class, called `VarTrack` in this document.
@@ -72,33 +72,23 @@ Whenever a variable is declared through any of the variable usage methods, it ge
 | `referenced` | `data[]`    | reference information                          |
 | `shadow`     | `variable?` | a variable if this shadowed one                |
 
-Whenever the tracker detects improper usage of a variable, it appends a table to its list in `tracker.diagnostics`. Each table contains these keys:
+Whenever the tracker detects improper usage of a variable, it appends a table to its list in `tracker.diagnostics`. Each table will have a `type` key, but any additional keys are determined by the `type` key.
 
-| Key    | Type        | Description                         |
-|--------|-------------|-------------------------------------|
-| `type` | `string`    | type of diagnostic                  |
-| `data` | `data`      | data associated with the diagnostic |
-| `var`  | `variable`  | variable affected by the diagnostic |
-
-The `type` field can be one of the following strings:
+The `type` key can be one of the following strings:
 - `"unused_local"` - a local was declared but never referenced
-  - `var` holds the variable that wasn't used
+  - `var: variable` holds the variable that wasn't used
 - `"shadowed_local"` - a local was re-declared over another local
-  - `var` holds the new variable. The old variable is in the new variable's `shadow` field.
+  - `var: variable` holds the new variable. The old variable is in the new variable's `shadow` field.
 - `"defined_global"` - a *new* global was defined
-  - `var` holds the global that was defined
+  - `var: variable` holds the global that was defined
 - `"redefined_constant"` - a constant was defined more than once
-  - `data` holds the new definition data
-  - `var` holds the constant that was redefined
+  - `data: data` holds the new definition data
+  - `var: variable` holds the constant that was redefined
 - `"unknown_global"` - a global was referenced but never defined. This creates a new global.
-  - `var` holds the global that was referenced and generated
+  - `var: variable` holds the global that was referenced and generated
 - `"uninitialized_local"` - a local was referenced but never defined
-  - `data` holds the new reference data
-  - `var` holds the variable that was referenced
-
-If the `data` field is present, it holds the value passed in as a second argument to the variable usage method that generated this diagnostic. If it's not present, it's can be found in the variable's info table.
-
-The `var` field is a reference to a variable table in `tracker.declared`.
+  - `data: data` holds the new reference data
+  - `var: variable` holds the variable that was referenced
 
 Diagnostics in trackers created with `tracker:block()` aren't passed to their parent tracker.
 
