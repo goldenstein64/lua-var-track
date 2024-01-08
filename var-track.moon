@@ -26,8 +26,8 @@ class VarTrack
 		@diagnostics = {}
 		@declared = {}
 		if globals
-			for name in *globals
-				var = VarInfo name
+			for name, data in pairs globals
+				var = VarInfo name, data
 				var.global = true
 				@declared[name] = var
 

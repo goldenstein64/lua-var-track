@@ -64,32 +64,40 @@
 ---
 ---```lua
 ----- beginning of program
------ local var_track = VarTrack(globals)
+---local tracker = VarTrack(globals)
 ---```
 ---
 ---Examples:
 ---
 ---```lua
------ local globals = {}
------ for k in pairs(_G) do
------   table.insert(globals, k)
------ end
------ local var_track = VarTrack(globals)
----
+-----[[
 ---local foo = 5
------ var_track:declare("foo")
------ var_track:define("foo")
 ---
 ---foo = foo * 10
------ var_track:reference("foo")
------ var_track:define("foo")
 ---
 ---print(foo)
------ var_track:reference("print")
------ var_track:reference("foo")
+---]]
+---
+---local globals = {}
+---for name in pairs(_G) do
+---  globals[name] = { data... }
+---end
+---local tracker = VarTrack(globals)
+---
+----- local foo = 5
+---tracker:declare("foo", { data... })
+---tracker:define("foo", { data... })
+---
+----- foo = foo * 10
+---tracker:reference("foo", { data... })
+---tracker:define("foo", { data... })
+---
+----- print(foo)
+---tracker:reference("print", { data... })
+---tracker:reference("foo", { data... })
 ---```
 ---@class var-track.VarTrack.Class
----@overload fun(globals?: string[]): var-track.VarTrack
+---@overload fun(globals?: { [string]: any }): var-track.VarTrack
 local VarTrackClass = {}
 
 ---a variable tracker
@@ -102,7 +110,8 @@ local VarTrack = {}
 ---declares a variable `name`
 ---
 ---```lua
----local foo -- var_track:declare('foo')
+----- local foo
+---tracker:declare('foo')
 ---```
 ---
 ---The `data` argument is used to store extra information about the variable's
@@ -115,7 +124,8 @@ function VarTrack:declare(name, data) end
 ---defines a variable `name`
 ---
 ---```lua
----foo = 5 -- var_track:define('foo')
+----- foo = 5
+---tracker:define('foo')
 ---```
 ---
 ---The `data` argument is used to store extra information about the variable's
@@ -127,7 +137,9 @@ function VarTrack:define(name, data) end
 ---references a variable `name`
 ---
 ---```lua
----foo() -- var_track:reference('foo')
+----- print(foo)
+---tracker:reference('print')
+---tracker:reference('foo')
 ---```
 ---
 ---The `data` argument is used to store extra information about the variable's
@@ -139,8 +151,11 @@ function VarTrack:reference(name, data) end
 ---ends this variable tracker's scope
 ---
 ---```lua
----  -- ...
----end -- var_track:done()
+-----[[
+---  ...
+---end
+---]]
+---tracker:done()
 ---```
 ---@return var-track.diagnostic[] diagnostics
 function VarTrack:done() end
@@ -148,8 +163,11 @@ function VarTrack:done() end
 ---creates a new scope under this variable tracker
 ---
 ---```lua
----do -- sub_track = var_track:scope()
----  -- ...
+-----[[
+---do
+---  ...
+---]]
+---local sub_tracker = tracker:scope()
 ---```
 ---@return var-track.VarTrack
 function VarTrack:scope() end
