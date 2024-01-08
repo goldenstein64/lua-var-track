@@ -206,11 +206,13 @@ describe 'VarTrack', ->
 		-- end
 
 		v = VarTrack { ['foo']: 'decl_data1' }
+		global_foo = v.declared['foo']
 		local_foo = v\declare 'foo', 'decl_data2'
 		v\define 'foo', 'def2_data'
 		v\reference 'foo', 'ref_data'
 		diagnostics = v\done!
 
+		assert.equal local_foo.shadow, global_foo
 		assert.same {}, diagnostics
 
 	it 'diagnoses unused shadowed locals', ->
