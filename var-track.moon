@@ -35,9 +35,9 @@ class VarTrack
 		var = VarInfo name, data
 
 		if old_var = @declared[name]
+			var.shadow = old_var
 			if not old_var.global
 				insert @diagnostics, { type: 'shadowed_local', :var }
-				var.shadow = old_var
 
 		@declared[name] = var
 		var
