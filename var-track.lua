@@ -19,7 +19,6 @@ check_unused = function(self, var)
   if not var.global and #var.referenced <= 0 then
     insert(self.diagnostics, {
       type = 'unused_local',
-      data = var.declared,
       var = var
     })
   end
@@ -48,14 +47,13 @@ do
       do
         local old_var = self.declared[name]
         if old_var then
+          var.shadow = old_var
           if not old_var.global then
             insert(self.diagnostics, {
               type = 'shadowed_local',
-              data = data,
-              var = old_var
+              var = var
             })
           end
-          var.shadow = old_var
         end
       end
       self.declared[name] = var
@@ -72,7 +70,6 @@ do
         self.declared[name] = var
         insert(self.diagnostics, {
           type = 'defined_global',
-          data = data,
           var = var
         })
       end
@@ -96,7 +93,6 @@ do
         self.declared[name] = var
         insert(self.diagnostics, {
           type = 'unknown_global',
-          data = data,
           var = var
         })
       end
@@ -135,9 +131,8 @@ do
       self.diagnostics = { }
       self.declared = { }
       if globals then
-        for _index_0 = 1, #globals do
-          local name = globals[_index_0]
-          local var = VarInfo(name)
+        for name, data in pairs(globals) do
+          local var = VarInfo(name, data)
           var.global = true
           self.declared[name] = var
         end
