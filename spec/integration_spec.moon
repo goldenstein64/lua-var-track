@@ -205,8 +205,8 @@ describe 'VarTrack', ->
 		--   foo()
 		-- end
 
-		v = VarTrack { 'foo' }
-		v\declare 'foo', 'decl_data'
+		v = VarTrack { ['foo']: 'decl_data1' }
+		local_foo = v\declare 'foo', 'decl_data2'
 		v\define 'foo', 'def2_data'
 		v\reference 'foo', 'ref_data'
 		diagnostics = v\done!
