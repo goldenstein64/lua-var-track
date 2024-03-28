@@ -147,7 +147,7 @@ tracker:define("later_var")
 tracker:reference("print")
 tracker:reference("later_var")
 
-local foo_tracker = tracker:scope()
+local foo_tracker = tracker:scope() do
   foo_tracker:reference("print")
   foo_tracker:reference("later_var") -- no diagnostic generated!
   foo_tracker:done()
