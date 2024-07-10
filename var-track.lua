@@ -1,13 +1,13 @@
 local insert
 insert = table.insert
 local VarInfo
-VarInfo = function(name, declared)
+VarInfo = function(owner, name, declared)
   if declared == nil then
     declared = true
   end
   return {
+    owner = owner,
     name = name,
-    global = false,
     constant = false,
     declared = declared,
     defined = { },
@@ -16,7 +16,7 @@ VarInfo = function(name, declared)
 end
 local check_unused
 check_unused = function(self, var)
-  if not var.global and #var.referenced <= 0 then
+  if var.owner == self and #var.referenced <= 0 then
     insert(self.diagnostics, {
       type = 'unused_local',
       var = var
@@ -28,7 +28,7 @@ check_unused = function(self, var)
 end
 local push_global
 push_global = function(self, var)
-  if var.global then
+  if not var.owner then
     self.parent.declared[var.name] = var
   end
   if var.shadow then
@@ -43,12 +43,12 @@ do
       if data == nil then
         data = true
       end
-      local var = VarInfo(name, data)
+      local var = VarInfo(self, name, data)
       do
         local old_var = self.declared[name]
         if old_var then
           var.shadow = old_var
-          if not old_var.global then
+          if old_var.owner then
             insert(self.diagnostics, {
               type = 'shadowed_local',
               var = var
@@ -65,8 +65,7 @@ do
       end
       local var = self.declared[name]
       if not var then
-        var = VarInfo(name, data)
-        var.global = true
+        var = VarInfo(nil, name, data)
         self.declared[name] = var
         insert(self.diagnostics, {
           type = 'defined_global',
@@ -88,15 +87,14 @@ do
       end
       local var = self.declared[name]
       if not var then
-        var = VarInfo(name, data)
-        var.global = true
+        var = VarInfo(nil, name, data)
         self.declared[name] = var
         insert(self.diagnostics, {
           type = 'unknown_global',
           var = var
         })
       end
-      if not var.global and #var.defined <= 0 then
+      if var.owner and #var.defined <= 0 then
         insert(self.diagnostics, {
           type = 'uninitialized_local',
           data = data,
@@ -134,8 +132,7 @@ do
       self.declared = { }
       if globals then
         for name, data in pairs(globals) do
-          local var = VarInfo(name, data)
-          var.global = true
+          local var = VarInfo(nil, name, data)
           self.declared[name] = var
         end
       end
