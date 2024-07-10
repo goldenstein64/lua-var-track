@@ -62,10 +62,10 @@ import insert from table
 ---@param name string
 ---@param declared any
 ---@return var-track.var
-VarInfo = (name, declared=true) ->
+VarInfo = (owner, name, declared=true) ->
 	{
+		:owner
 		:name
-		global: false
 		constant: false
 		:declared
 		defined: {}
@@ -75,7 +75,7 @@ VarInfo = (name, declared=true) ->
 ---@param self var-track.VarTrack
 ---@param var var-track.var
 check_unused = (var) =>
-	if not var.global and #var.referenced <= 0
+	if var.owner == @ and #var.referenced <= 0
 		insert @diagnostics, { type: 'unused_local', :var }
 
 	check_unused @, var.shadow if var.shadow
@@ -83,7 +83,7 @@ check_unused = (var) =>
 ---@param self var-track.VarTrack
 ---@param var var-track.var
 push_global = (var) =>
-	@parent.declared[var.name] = var if var.global
+	@parent.declared[var.name] = var if not var.owner
 
 	push_global @, var.shadow if var.shadow
 
@@ -135,8 +135,7 @@ class VarTrack
 		@declared = {}
 		if globals
 			for name, data in pairs globals
-				var = VarInfo name, data
-				var.global = true
+				var = VarInfo nil, name, data
 				@declared[name] = var
 
 	---declares a variable `name`
@@ -152,11 +151,11 @@ class VarTrack
 	---@param data any
 	---@return var-track.var
 	declare: (name, data=true) =>
-		var = VarInfo name, data
+		var = VarInfo @, name, data
 
 		if old_var = @declared[name]
 			var.shadow = old_var
-			if not old_var.global
+			if old_var.owner
 				insert @diagnostics, { type: 'shadowed_local', :var }
 
 		@declared[name] = var
@@ -176,8 +175,7 @@ class VarTrack
 	define: (name, data=true) =>
 		var = @declared[name]
 		if not var
-			var = VarInfo name, data
-			var.global = true
+			var = VarInfo nil, name, data
 			@declared[name] = var
 
 			insert @diagnostics, { type: 'defined_global', :var }
@@ -203,15 +201,14 @@ class VarTrack
 	reference: (name, data=true) =>
 		var = @declared[name]
 		if not var
-			var = VarInfo name, data
-			var.global = true
+			var = VarInfo nil, name, data
 
 			-- I'm not sure if this is the best idea...
 			@declared[name] = var
 
 			insert @diagnostics, { type: 'unknown_global', :var }
 
-		if not var.global and #var.defined <= 0
+		if var.owner and #var.defined <= 0
 			insert @diagnostics, { type: 'uninitialized_local', :data, :var }
 
 		insert var.referenced, data
@@ -244,10 +241,8 @@ class VarTrack
 	---```
 	---@return var-track.VarTrack
 	scope: =>
-		result = VarTrack!
-		result.parent = @
-		setmetatable result.declared, { __index: @declared }
-		result
-
-
-
+		with VarTrack!
+			.parent = @
+			-- setmetatable .declared, { __index: @declared }
+			for k, v in pairs @declared
+				.declared[k] = v

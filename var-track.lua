@@ -117,12 +117,14 @@ do
       return self.diagnostics
     end,
     scope = function(self)
-      local result = VarTrack()
-      result.parent = self
-      setmetatable(result.declared, {
-        __index = self.declared
-      })
-      return result
+      do
+        local _with_0 = VarTrack()
+        _with_0.parent = self
+        for k, v in pairs(self.declared) do
+          _with_0.declared[k] = v
+        end
+        return _with_0
+      end
     end
   }
   _base_0.__index = _base_0

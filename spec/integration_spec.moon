@@ -17,7 +17,7 @@ describe 'VarTrack', ->
 				type: 'unused_local'
 				var: {
 					name: 'foo'
-					global: false
+					owner: v
 					constant: false
 					declared: 'decl_data'
 					defined: {}
@@ -42,7 +42,7 @@ describe 'VarTrack', ->
 				type: 'unused_local'
 				var: {
 					name: 'foo'
-					global: false
+					owner: v
 					constant: false
 					declared: 'decl_data'
 					defined: { 'def_data' }
@@ -69,7 +69,7 @@ describe 'VarTrack', ->
 				data: 'ref_data'
 				var: {
 					name: 'foo'
-					global: false
+					owner: v
 					constant: false
 					declared: 'decl_data'
 					defined: {}
@@ -91,7 +91,7 @@ describe 'VarTrack', ->
 
 		expected_var1 = {
 			name: 'foo'
-			global: false
+			owner: v
 			constant: false
 			declared: 'decl1_data'
 			defined: {}
@@ -100,7 +100,7 @@ describe 'VarTrack', ->
 
 		expected_var2 = {
 			name: 'foo'
-			global: false
+			owner: v
 			constant: false
 			declared: 'decl2_data'
 			defined: {}
@@ -135,7 +135,7 @@ describe 'VarTrack', ->
 				type: 'defined_global'
 				var: {
 					name: 'foo'
-					global: true
+					owner: nil
 					constant: false
 					declared: 'def_data'
 					defined: { 'def_data' }
@@ -158,7 +158,7 @@ describe 'VarTrack', ->
 				type: 'unknown_global'
 				var: {
 					name: 'foo'
-					global: true
+					owner: nil
 					constant: false
 					declared: 'ref_data'
 					defined: {}
@@ -188,7 +188,7 @@ describe 'VarTrack', ->
 				data: 'def2_data'
 				var: {
 					name: 'foo'
-					global: false
+					owner: v
 					constant: true
 					declared: 'decl_data'
 					defined: { 'def1_data', 'def2_data' }
@@ -234,7 +234,7 @@ describe 'VarTrack', ->
 
 		var1_data = {
 			name: 'foo'
-			global: false
+			owner: v
 			constant: false
 			declared: 'decl1_data'
 			defined: { 'def1_data' }
@@ -243,7 +243,7 @@ describe 'VarTrack', ->
 
 		var2_data = {
 			name: 'foo'
-			global: false
+			owner: v
 			constant: false
 			declared: 'decl2_data'
 			defined: { 'def2_data' }
@@ -280,7 +280,7 @@ describe 'VarTrack', ->
 			type: 'unused_local'
 			var: types.shape {
 				name: 'foo'
-				global: false
+				owner: v
 				constant: false
 				declared: 'decl1'
 				defined: types.shape { 'def1' }
@@ -291,7 +291,7 @@ describe 'VarTrack', ->
 			type: 'unused_local'
 			var: types.shape {
 				name: 'bar'
-				global: false
+				owner: v
 				constant: false
 				declared: 'decl2'
 				defined: types.shape { 'def2' }
@@ -379,7 +379,7 @@ describe 'VarTrack', ->
 				type: 'unused_local'
 				var: {
 					name: 'foo'
-					global: false
+					owner: w
 					constant: false
 					declared: 'decl'
 					defined: {}
@@ -393,7 +393,7 @@ describe 'VarTrack', ->
 				type: 'defined_global'
 				var: {
 					name: 'foo'
-					global: true
+					owner: nil
 					constant: false
 					declared: 'def'
 					defined: { 'def' }

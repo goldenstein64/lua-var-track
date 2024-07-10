@@ -65,7 +65,7 @@ Whenever a variable is declared through any of the variable usage methods, it ge
 | Key          | Type        | Description                                    |
 |--------------|-------------|------------------------------------------------|
 | `name`       | `string`    | the variable's name                            |
-| `global`     | `boolean`   | is this a global?                              |
+| `owner`      | `VarTrack?` | which block does this variable belong to?      |
 | `constant`   | `boolean`   | is this a constant? (can only be defined once) |
 | `declared`   | `data`      | declaration information                        |
 | `defined`    | `data[]`    | definition information                         |
@@ -271,6 +271,18 @@ tracker:reference('foo')
 
 The `data` argument is used to store extra information about the variable's reference.
 
+### `tracker:scope() -> VarTrack`
+
+creates a new scope under this variable tracker
+
+```lua
+--[[
+do
+  ...
+]]
+local sub_tracker = tracker:scope()
+```
+
 ### `tracker:done() -> diagnostic[]`
 
 ends this variable tracker's scope
@@ -283,16 +295,5 @@ end
 tracker:done()
 ```
 
-The tracker's diagnostics are returned, and this tracker should be disposed of.
-
-### `tracker:scope() -> VarTrack`
-
-creates a new scope under this variable tracker
-
-```lua
---[[
-do
-  ...
-]]
-local sub_tracker = tracker:scope()
-```
+The tracker's diagnostics are returned. After calling this, the tracker should
+be treated like a read-only object, and none of the above methods should be used.
