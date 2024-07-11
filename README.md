@@ -74,7 +74,8 @@ Whenever a variable is declared through any of the variable usage methods, it ge
 
 Whenever the tracker detects improper usage of a variable, it appends a table to its list in `tracker.diagnostics`. Each table will have a `type` key, but any additional keys are determined by the `type` key.
 
-The `type` key can be one of the following strings:
+The `type` key can be one of the following strings. The available properties are listed below it.
+
 - `"unused_local"` - a local was declared but never referenced
   - `var: variable` holds the variable that wasn't used
 - `"shadowed_local"` - a local was re-declared over another local
