@@ -1,8 +1,8 @@
 # lua-var-track
 
-A tool used to track the state of Lua variables as they are used throughout a program. This can be used to store types and other information, and it also records diagnostics for accidental globals and unused variables.
+A tool used to track the state of Lua variables in a program. This can be used to store types and other information, and it also records diagnostics for accidental globals and unused variables.
 
-The typical use case for this library is in the implementation of analysis in a language server that compiles to Lua. Information about variables can be stored in the tracker's properties.
+The typical use case for this library is in the analysis of languages that have Lua-like variable and scoping rules. Information about variables can be stored in the tracker's properties.
 
 ## Installation
 
@@ -74,7 +74,7 @@ Whenever a variable is declared through any of the variable usage methods, it ge
 
 Whenever the tracker detects improper usage of a variable, it appends a table to its list in `tracker.diagnostics`. Each table will have a `type` key, but any additional keys are determined by the `type` key.
 
-The `type` key can be one of the following strings. The available properties are listed below it.
+The `type` key can be one of the following strings. The other available keys are listed below each one.
 
 - `"unused_local"` - a local was declared but never referenced
   - `var: variable` holds the variable that wasn't used
@@ -91,7 +91,7 @@ The `type` key can be one of the following strings. The available properties are
   - `data: data` holds the new reference data
   - `var: variable` holds the variable that was referenced
 
-Diagnostics in trackers created with `tracker:block()` aren't passed to their parent tracker.
+Diagnostics in trackers created with `tracker:scope()` aren't passed to their parent tracker.
 
 ## Gotchas
 
