@@ -49,7 +49,7 @@ local diagnostics = tracker:done()
 -- analyze diagnostics and tracker.declared
 ```
 
-The `var-track` module is a class, called `VarTrack` in this document.
+The `var-track` module is a class called `VarTrack` in this document.
 
 - When a program starts, the class gets instantiated as `VarTrack(globals)`. In this document, an instance of this is called a `tracker`.
 - When a local variable is declared, `tracker:declare(name, data)` is called. It returns a table describing what information was stored about the variable. It's the same table stored at `tracker.declared[name]`.
@@ -62,15 +62,15 @@ The `data` argument is used to store information about the variable at that poin
 
 Whenever a variable is declared through any of the variable usage methods, it generates an entry in `tracker.declared`, where the key is the variable name and the value is a table of information about the variable with the following keys:
 
-| Key          | Type        | Description                                                 |
-|--------------|-------------|-------------------------------------------------------------|
-| `name`       | `string`    | the variable's name                                         |
-| `owner`      | `VarTrack?` | which block does this variable belong to? (`nil` if global) |
-| `constant`   | `boolean`   | is this a constant? (can only be defined once)              |
-| `declared`   | `data`      | declaration information                                     |
-| `defined`    | `data[]`    | definition information                                      |
-| `referenced` | `data[]`    | reference information                                       |
-| `shadow`     | `variable?` | a variable if this shadowed one                             |
+| Key          | Type        | Description                                            |
+|--------------|-------------|--------------------------------------------------------|
+| `name`       | `string`    | the variable's name                                    |
+| `owner`      | `VarTrack?` | the tracker this variable belongs to (`nil` if global) |
+| `constant`   | `boolean`   | is this a constant? (can only be defined once)         |
+| `declared`   | `data`      | declaration information                                |
+| `defined`    | `data[]`    | definition information                                 |
+| `referenced` | `data[]`    | reference information                                  |
+| `shadow`     | `variable?` | a variable if this shadowed one                        |
 
 Whenever the tracker detects improper usage of a variable, it appends a table to its list in `tracker.diagnostics`. Each table will have a `type` key, but any additional keys are determined by the `type` key.
 
