@@ -4,8 +4,8 @@
 ---@class var-track.var
 ---the variable's name
 ---@field name string
----whether the variable is global
----@field global boolean
+---the tracker this variable belongs to. `nil` means it's a global.
+---@field owner var-track.VarTrack?
 ---whether the variable is a constant
 ---@field constant boolean
 ---where the variable was declared
